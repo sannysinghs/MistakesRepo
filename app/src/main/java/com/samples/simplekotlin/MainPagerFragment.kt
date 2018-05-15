@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.samples.simplekotlin.data.Mistake
 
 class MainPagerFragment : Fragment() {
 
@@ -21,7 +22,7 @@ class MainPagerFragment : Fragment() {
 
         mainPager.adapter = object : FragmentPagerAdapter(fragmentManager) {
 
-            val fragments = listOf(MistakeListingsFragment(), SettingFragment())
+            val fragments = listOf(AllMistakesListingFragment(), FavouriteMistakesListingFragment())
 
             override fun getCount(): Int = fragments.size
 
@@ -30,7 +31,7 @@ class MainPagerFragment : Fragment() {
             }
 
             override fun getPageTitle(position: Int): CharSequence? {
-                return if (position == 0) "Mistakes" else "Settings"
+                return fragments[position].title
             }
         }
 
@@ -47,6 +48,18 @@ class MainPagerFragment : Fragment() {
         }
 
         return  v
+    }
+
+    class AllMistakesListingFragment : MistakesListingFragment() {
+        override fun getMistakes(mistake: List<Mistake>): List<Mistake> = mistake
+        override val title = "All"
+    }
+
+    class FavouriteMistakesListingFragment: MistakesListingFragment() {
+        override fun getMistakes(mistake: List<Mistake>): List<Mistake> = mistake.filter {
+            it.isFavourite
+        }
+        override val title = "Favourites"
     }
 
     companion object {
