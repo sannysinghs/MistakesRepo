@@ -5,11 +5,14 @@ import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.samples.simplekotlin.data.Mistake
+import com.samples.simplekotlin.utils.find
+import com.samples.simplekotlin.utils.onRefresh
 
 class MainPagerFragment : Fragment() {
 
@@ -42,9 +45,9 @@ class MainPagerFragment : Fragment() {
         val v: View = inflater.inflate(R.layout.main_pager_fragment, container, false)
 
         v.apply {
-            tabLayout = v.findViewById<View>(R.id.main_tab_layout) as TabLayout
-            mainPager = v.findViewById<View>(R.id.main_pager) as ViewPager
-            mainToolbar = v.findViewById<View>(R.id.main_toolbar) as android.support.v7.widget.Toolbar
+            tabLayout = v.find(R.id.main_tab_layout)
+            mainPager = v.find(R.id.main_pager)
+            mainToolbar = v.find(R.id.main_toolbar)
         }
 
         return  v

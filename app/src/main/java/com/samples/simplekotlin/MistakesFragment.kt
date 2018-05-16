@@ -3,6 +3,7 @@ package com.samples.simplekotlin
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import android.widget.TextView
 import com.samples.simplekotlin.data.Mistake
 import com.samples.simplekotlin.utils.find
 import com.samples.simplekotlin.utils.inflate
+import com.samples.simplekotlin.utils.onRefresh
 
 abstract class MistakesListingFragment: Fragment() , MainMvpView {
 
@@ -21,6 +23,8 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
     private var presenter = MainPresenter()
     private lateinit var mistakesAdapter: MistakeAdapter
     private lateinit var recyclerView: RecyclerView
+    private lateinit var refreshLayout: SwipeRefreshLayout
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -37,8 +41,15 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
             layoutManager = LinearLayoutManager(context)
             adapter = mistakesAdapter
         }
+
+        refreshLayout = v.find(R.id.refresh_layout)
+        refreshLayout.onRefresh {
+            presenter.loadMistakes()
+        }
         return v
     }
+
+
 
     override fun showMistakeList(mistakes: List<Mistake>) {
         mistakesAdapter.data = getMistakes(mistakes)
@@ -49,6 +60,11 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun showLoading(b: Boolean) {
+        refreshLayout.apply {
+            isRefreshing = b
+        }
+    }
 
     class MistakeAdapter(var context: Context?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
