@@ -1,13 +1,13 @@
-package com.samples.simplekotlin.model
+package com.samples.simplekotlin.data.source
 
-import com.samples.simplekotlin.data.Mistake
+import com.samples.simplekotlin.data.model.Mistake
 
 class MistakesRepository: MistakesDataSource {
 
     val cacheValues: LinkedHashMap<String, Mistake> = LinkedHashMap()
 
-    override fun getAll(): Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getAll(callback: MistakesDataSource.LoadMistakesCallback) {
+
     }
 
     private fun cacheAndPerform(m: Mistake, perform:(Mistake) -> Unit): Unit {
@@ -18,7 +18,8 @@ class MistakesRepository: MistakesDataSource {
 
     override fun save(mistake: Mistake) {
         cacheAndPerform(mistake) {
-
+            //STORE TO PREFERENCE HERE
+            //DO REMOTE STORAGE HERE
         }
     }
 

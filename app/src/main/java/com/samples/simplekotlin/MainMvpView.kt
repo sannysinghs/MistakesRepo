@@ -1,6 +1,6 @@
 package com.samples.simplekotlin
 
-import com.samples.simplekotlin.data.Mistake
+import com.samples.simplekotlin.data.model.Mistake
 
 interface MainMvpView {
     fun showMistakeList(mistakes: List<Mistake>)

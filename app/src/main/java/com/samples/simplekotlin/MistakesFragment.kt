@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.samples.simplekotlin.data.Mistake
+import com.samples.simplekotlin.data.model.Mistake
 import com.samples.simplekotlin.utils.find
 import com.samples.simplekotlin.utils.inflate
 import com.samples.simplekotlin.utils.onRefresh
