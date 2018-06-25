@@ -1,3 +1,9 @@
 package com.samples.simplekotlin.data
 
-data class Mistake(val id: String, val title: String, val desc: String = "", val isFavourite: Boolean = false)
+import java.util.*
+
+data class Mistake(
+        val id: String = UUID.randomUUID().toString(),
+        val title: String,
+        val desc: String = "",
+        val isFavourite: Boolean = false)
