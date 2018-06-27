@@ -1,6 +1,7 @@
 package com.samples.simplekotlin
 
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
@@ -17,11 +18,12 @@ class MainPagerFragment : Fragment() {
     private lateinit var tabLayout: TabLayout
     private lateinit var mainPager: ViewPager
     private lateinit var mainToolbar: Toolbar
+    private lateinit var fab: FloatingActionButton
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mainPager.adapter = object : FragmentPagerAdapter(fragmentManager) {
+        val adapter = object : FragmentPagerAdapter(fragmentManager) {
 
             val fragments = listOf(AllMistakesListingFragment(), FavouriteMistakesListingFragment())
 
@@ -36,6 +38,12 @@ class MainPagerFragment : Fragment() {
             }
         }
 
+        fab.setOnClickListener {
+            (adapter.getItem(mainPager.currentItem) as AllMistakesListingFragment).addNewMistake()
+        }
+
+        mainPager.adapter = adapter
+
         tabLayout.setupWithViewPager(mainPager)
     }
 
@@ -46,6 +54,7 @@ class MainPagerFragment : Fragment() {
             tabLayout = v.find(R.id.main_tab_layout)
             mainPager = v.find(R.id.main_pager)
             mainToolbar = v.find(R.id.main_toolbar)
+            fab = v.find(R.id.fab_add_task)
         }
 
         return  v
@@ -53,6 +62,7 @@ class MainPagerFragment : Fragment() {
 
     class AllMistakesListingFragment : MistakesListingFragment() {
         override fun getMistakes(mistake: List<Mistake>): List<Mistake> = mistake
+
         override val title = "All"
     }
 

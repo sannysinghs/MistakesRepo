@@ -1,32 +1,37 @@
 package com.samples.simplekotlin.data.source.local
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.samples.simplekotlin.data.model.Mistake
 import com.samples.simplekotlin.data.model.MistakesResponse
 import com.samples.simplekotlin.data.source.MistakesDataSource
+import java.util.*
 
-class MistakesLocalDataSource (context: Context): MistakesDataSource {
+class MistakesLocalDataSource (private val storage: SharedPreferences): MistakesDataSource {
 
-    private val storage: SharedPreferences
-    init {
-        storage = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE)
+    private val gson by lazy {
+        Gson()
     }
 
     override fun getAll(callback: MistakesDataSource.LoadMistakesCallback) {
         val fromJson =
-                Gson().fromJson(storage.getString(PREF_TABLE_NAME, ""), MistakesResponse::class.java)
-        callback.onTasksLoaded(fromJson.mistakes)
+                gson.fromJson(storage.getString(PREF_TABLE_NAME, ""), MistakesResponse::class.java)
+
+        callback.onTasksLoaded(fromJson?.mistakes ?: ArrayList())
     }
 
     override fun save(mistake: Mistake) {
-        val mistakeCollection =
-                Gson().fromJson(storage.getString(PREF_TABLE_NAME, ""), MistakesResponse::class.java)
-        //add to list
+        val data =
+                gson.fromJson(storage.getString(PREF_TABLE_NAME, ""), MistakesResponse::class.java)
+
+        val mistakes = ArrayList<Mistake>(data?.mistakes ?: listOf())
+        mistakes.add(mistake)
+
         storage.edit()
-                .putString(PREF_TABLE_NAME, Gson().toJson(mistakeCollection, MistakesResponse::class.java))
-                .apply()
+                .apply {
+                    putString(PREF_TABLE_NAME, Gson().toJson(MistakesResponse(mistakes), MistakesResponse::class.java))
+                    apply()
+                }
     }
 
     companion object {

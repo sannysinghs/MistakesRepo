@@ -1,7 +1,9 @@
 package com.samples.simplekotlin
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -11,6 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.samples.simplekotlin.data.model.Mistake
+import com.samples.simplekotlin.data.source.MistakesDataSource
+import com.samples.simplekotlin.data.source.MistakesRepository
+import com.samples.simplekotlin.data.source.local.MistakesLocalDataSource
 import com.samples.simplekotlin.utils.find
 import com.samples.simplekotlin.utils.inflate
 import com.samples.simplekotlin.utils.onRefresh
@@ -24,6 +29,10 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
     private lateinit var mistakesAdapter: MistakeAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var refreshLayout: SwipeRefreshLayout
+    private val mistakeRepo by lazy {
+        MistakesRepository(
+                MistakesLocalDataSource(context!!.getSharedPreferences(MistakesLocalDataSource.PREF_FILE_NAME, Context.MODE_PRIVATE)))
+    }
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -44,7 +53,16 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
 
         refreshLayout = v.find(R.id.refresh_layout)
         refreshLayout.onRefresh {
-            presenter.loadMistakes()
+            mistakeRepo.getAll(object: MistakesDataSource.LoadMistakesCallback {
+                override fun onTasksLoaded(tasks: List<Mistake>) {
+                    refreshLayout.isRefreshing = false
+                    showMistakeList(tasks)
+                }
+
+                override fun onDataNotAvailable() {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+            })
         }
         return v
     }
@@ -64,6 +82,10 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
         refreshLayout.apply {
             isRefreshing = b
         }
+    }
+
+    fun addNewMistake() {
+        mistakeRepo.save(Mistake(title = "What baby", desc = "This is coding time!"))
     }
 
     class MistakeAdapter(var context: Context?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
