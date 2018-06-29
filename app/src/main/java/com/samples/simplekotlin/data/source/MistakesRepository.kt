@@ -6,23 +6,25 @@ import com.samples.simplekotlin.data.source.local.MistakesLocalDataSource
 class MistakesRepository (private val localDataSource: MistakesLocalDataSource): MistakesDataSource {
 
     val cacheValues: LinkedHashMap<String, Mistake> = LinkedHashMap()
-    val refresh = true
+    private var refresh = false
 
-    override fun getAll(callback: MistakesDataSource.LoadMistakesCallback) {
-        if (refresh) {
-            localDataSource.getAll(object : MistakesDataSource.LoadMistakesCallback {
-                override fun onTasksLoaded(tasks: List<Mistake>) {
-                    callback.onTasksLoaded(tasks)
-                }
+    override fun getAll(callback: MistakesDataSource.LoadMistakesCallback) = if (refresh) {
+        localDataSource.getAll(object : MistakesDataSource.LoadMistakesCallback {
+            override fun onTasksLoaded(tasks: List<Mistake>) {
+                callback.onTasksLoaded(tasks)
+            }
 
-                override fun onDataNotAvailable() {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
+            override fun onDataNotAvailable() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
 
-            })
-        } else {
-            callback.onTasksLoaded(ArrayList<Mistake>(cacheValues.values))
-        }
+        })
+    } else {
+        callback.onTasksLoaded(ArrayList<Mistake>(cacheValues.values))
+    }
+
+    fun refreshData() {
+        refresh = true
     }
 
     private fun cacheAndPerform(m: Mistake, perform:(Mistake) -> Unit): Unit {
@@ -34,5 +36,4 @@ class MistakesRepository (private val localDataSource: MistakesLocalDataSource):
     override fun save(mistake: Mistake) = cacheAndPerform(mistake) {
         localDataSource.save(mistake)
     }
-
 }

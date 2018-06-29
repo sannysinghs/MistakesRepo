@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.samples.simplekotlin.data.model.Mistake
+import com.samples.simplekotlin.databinding.MainPagerFragmentBinding
 import com.samples.simplekotlin.utils.find
 
 class MainPagerFragment : Fragment() {
@@ -25,7 +26,8 @@ class MainPagerFragment : Fragment() {
 
         val adapter = object : FragmentPagerAdapter(fragmentManager) {
 
-            val fragments = listOf(AllMistakesListingFragment(), FavouriteMistakesListingFragment())
+            val fragments = listOf(AllMistakesListingFragment(),
+                    FavouriteMistakesListingFragment())
 
             override fun getCount(): Int = fragments.size
 
@@ -38,17 +40,14 @@ class MainPagerFragment : Fragment() {
             }
         }
 
-        fab.setOnClickListener {
-            (adapter.getItem(mainPager.currentItem) as AllMistakesListingFragment).addNewMistake()
-        }
-
         mainPager.adapter = adapter
 
         tabLayout.setupWithViewPager(mainPager)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val v: View = inflater.inflate(R.layout.main_pager_fragment, container, false)
+        val binding = MainPagerFragmentBinding.inflate(inflater, container, false)
+        val v = binding.root
 
         v.apply {
             tabLayout = v.find(R.id.main_tab_layout)
@@ -58,6 +57,11 @@ class MainPagerFragment : Fragment() {
         }
 
         return  v
+    }
+
+    fun onFabClick() {
+        (( mainPager.adapter as FragmentPagerAdapter )
+                .getItem(mainPager.currentItem) as AllMistakesListingFragment).addNewMistake()
     }
 
     class AllMistakesListingFragment : MistakesListingFragment() {

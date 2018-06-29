@@ -1,9 +1,9 @@
 package com.samples.simplekotlin
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -13,9 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.samples.simplekotlin.data.model.Mistake
-import com.samples.simplekotlin.data.source.MistakesDataSource
 import com.samples.simplekotlin.data.source.MistakesRepository
 import com.samples.simplekotlin.data.source.local.MistakesLocalDataSource
+import com.samples.simplekotlin.databinding.MistakesListingFragmentBinding
 import com.samples.simplekotlin.utils.find
 import com.samples.simplekotlin.utils.inflate
 import com.samples.simplekotlin.utils.onRefresh
@@ -25,48 +25,50 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
     abstract val title: String
     abstract fun getMistakes(mistake: List<Mistake>): List<Mistake>
 
-    private var presenter = MainPresenter()
     private lateinit var mistakesAdapter: MistakeAdapter
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var refreshLayout: SwipeRefreshLayout
+    private lateinit var refreshLayout : SwipeRefreshLayout
+
     private val mistakeRepo by lazy {
         MistakesRepository(
                 MistakesLocalDataSource(context!!.getSharedPreferences(MistakesLocalDataSource.PREF_FILE_NAME, Context.MODE_PRIVATE)))
     }
 
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        presenter.attachView(this)
-        presenter.loadMistakes()
-
-    }
+    private lateinit var mistakesViewModel: MistakesViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.mistakes_listing_fragment, container, false)
-        recyclerView = v.find(R.id.mistakes_recycler_view)
+        val binding = MistakesListingFragmentBinding.inflate(inflater, container, false)
+        binding.view = this
+
+        mistakesViewModel = ViewModelProviders.of(this)
+                .get(MistakesViewModel::class.java)
+        mistakesViewModel.mistakeRepo = mistakeRepo
+        binding.viewModel = mistakesViewModel
+
         mistakesAdapter = MistakeAdapter(context)
-        recyclerView.apply {
+        binding.mistakesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = mistakesAdapter
         }
 
-        refreshLayout = v.find(R.id.refresh_layout)
-        refreshLayout.onRefresh {
-            mistakeRepo.getAll(object: MistakesDataSource.LoadMistakesCallback {
-                override fun onTasksLoaded(tasks: List<Mistake>) {
-                    refreshLayout.isRefreshing = false
-                    showMistakeList(tasks)
-                }
+        refreshLayout = binding.refreshLayout
 
-                override fun onDataNotAvailable() {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-            })
+        refreshLayout.apply {
+            onRefresh {
+                mistakesViewModel.loadAllMistakes(true)
+            }
         }
-        return v
+
+        subscribeToLiveData()
+
+        return binding.root
     }
 
+    private fun subscribeToLiveData() {
+        mistakesViewModel.liveItems.observe(this, Observer {
+            mistakesAdapter.data = it ?: emptyList()
+            mistakesAdapter.notifyDataSetChanged()
+        })
+    }
 
 
     override fun showMistakeList(mistakes: List<Mistake>) {
