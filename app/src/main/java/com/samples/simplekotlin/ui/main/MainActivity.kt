@@ -1,12 +1,11 @@
-package com.samples.simplekotlin
+package com.samples.simplekotlin.ui.main
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.samples.simplekotlin.R
 
 class MainActivity :
         AppCompatActivity() {
-
-    lateinit var presenter: MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +18,7 @@ class MainActivity :
     private fun setupMainPagerFragment() {
         supportFragmentManager
                 .beginTransaction()
-                .add(R.id.main_container,  MainPagerFragment(), MainPagerFragment.TAG)
+                .add(R.id.main_container, MainPagerFragment(), MainPagerFragment.TAG)
                 .commit()
     }
 

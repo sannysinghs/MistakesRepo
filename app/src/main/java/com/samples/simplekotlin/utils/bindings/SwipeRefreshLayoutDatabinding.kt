@@ -1,8 +1,8 @@
-package com.samples.simplekotlin.utils
+package com.samples.simplekotlin.utils.bindings
 
 import android.databinding.BindingAdapter
 import android.support.v4.widget.SwipeRefreshLayout
-import com.samples.simplekotlin.MistakesViewModel
+import com.samples.simplekotlin.ui.notes.MistakesViewModel
 
 class SwipeRefreshLayoutDatabinding {
 

@@ -5,11 +5,11 @@
     <data>
         <variable
             name="view"
-            type="com.samples.simplekotlin.MistakesListingFragment"/>
+            type="com.samples.simplekotlin.ui.notes.MistakesListingFragment"/>
 
         <variable
             name="viewModel"
-            type="com.samples.simplekotlin.MistakesViewModel"/>
+            type="com.samples.simplekotlin.ui.notes.MistakesViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout

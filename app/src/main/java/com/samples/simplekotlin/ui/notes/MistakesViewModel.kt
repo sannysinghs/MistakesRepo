@@ -1,4 +1,4 @@
-package com.samples.simplekotlin
+package com.samples.simplekotlin.ui.notes
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel

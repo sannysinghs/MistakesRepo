@@ -5,7 +5,7 @@
     <data>
         <variable
             name="view"
-            type="com.samples.simplekotlin.MainPagerFragment"/>
+            type="com.samples.simplekotlin.ui.main.MainPagerFragment"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout

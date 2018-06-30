@@ -1,4 +1,4 @@
-package com.samples.simplekotlin
+package com.samples.simplekotlin.ui.main
 
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
@@ -10,16 +10,15 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.samples.simplekotlin.ui.notes.MistakesListingFragment
 import com.samples.simplekotlin.data.model.Mistake
 import com.samples.simplekotlin.databinding.MainPagerFragmentBinding
-import com.samples.simplekotlin.utils.find
 
 class MainPagerFragment : Fragment() {
 
     private lateinit var tabLayout: TabLayout
     private lateinit var mainPager: ViewPager
     private lateinit var mainToolbar: Toolbar
-    private lateinit var fab: FloatingActionButton
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

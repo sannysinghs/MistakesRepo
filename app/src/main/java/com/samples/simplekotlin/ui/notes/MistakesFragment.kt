@@ -1,4 +1,4 @@
-package com.samples.simplekotlin
+package com.samples.simplekotlin.ui.notes
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.samples.simplekotlin.R
 import com.samples.simplekotlin.data.model.Mistake
 import com.samples.simplekotlin.data.source.MistakesRepository
 import com.samples.simplekotlin.data.source.local.MistakesLocalDataSource
@@ -20,7 +21,7 @@ import com.samples.simplekotlin.utils.find
 import com.samples.simplekotlin.utils.inflate
 import com.samples.simplekotlin.utils.onRefresh
 
-abstract class MistakesListingFragment: Fragment() , MainMvpView {
+abstract class MistakesListingFragment: Fragment() {
 
     abstract val title: String
     abstract fun getMistakes(mistake: List<Mistake>): List<Mistake>
@@ -34,6 +35,11 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
     }
 
     private lateinit var mistakesViewModel: MistakesViewModel
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        mistakesViewModel.loadAllMistakes(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = MistakesListingFragmentBinding.inflate(inflater, container, false)
@@ -68,26 +74,6 @@ abstract class MistakesListingFragment: Fragment() , MainMvpView {
             mistakesAdapter.data = it ?: emptyList()
             mistakesAdapter.notifyDataSetChanged()
         })
-    }
-
-
-    override fun showMistakeList(mistakes: List<Mistake>) {
-        mistakesAdapter.data = getMistakes(mistakes)
-        mistakesAdapter.notifyDataSetChanged()
-    }
-
-    override fun showMistakeDetail(mistake: Mistake) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun showLoading(b: Boolean) {
-        refreshLayout.apply {
-            isRefreshing = b
-        }
-    }
-
-    fun addNewMistake() {
-        mistakeRepo.save(Mistake(title = "What baby", desc = "This is coding time!"))
     }
 
     class MistakeAdapter(var context: Context?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
