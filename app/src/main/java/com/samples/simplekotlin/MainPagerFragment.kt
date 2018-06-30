@@ -41,27 +41,17 @@ class MainPagerFragment : Fragment() {
         }
 
         mainPager.adapter = adapter
-
         tabLayout.setupWithViewPager(mainPager)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = MainPagerFragmentBinding.inflate(inflater, container, false)
-        val v = binding.root
 
-        v.apply {
-            tabLayout = v.find(R.id.main_tab_layout)
-            mainPager = v.find(R.id.main_pager)
-            mainToolbar = v.find(R.id.main_toolbar)
-            fab = v.find(R.id.fab_add_task)
-        }
+        mainPager = binding.mainPager
+        tabLayout = binding.mainTabLayout
+        mainToolbar = binding.mainToolbar
 
-        return  v
-    }
-
-    fun onFabClick() {
-        (( mainPager.adapter as FragmentPagerAdapter )
-                .getItem(mainPager.currentItem) as AllMistakesListingFragment).addNewMistake()
+        return  binding.root
     }
 
     class AllMistakesListingFragment : MistakesListingFragment() {
