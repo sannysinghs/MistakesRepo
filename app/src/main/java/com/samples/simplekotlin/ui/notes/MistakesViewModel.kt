@@ -1,16 +1,27 @@
 package com.samples.simplekotlin.ui.notes
 
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.databinding.ObservableBoolean
+import android.content.Context
+import android.content.ContextWrapper
+import android.databinding.*
+import android.graphics.drawable.Drawable
+import android.support.v4.content.ContextCompat
+import com.samples.simplekotlin.R
 import com.samples.simplekotlin.data.model.Mistake
 import com.samples.simplekotlin.data.source.MistakesDataSource
 import com.samples.simplekotlin.data.source.MistakesRepository
 
-class MistakesViewModel: ViewModel() {
+class MistakesViewModel(context: Application,
+                        private val mistakeRepo: MistakesRepository) : AndroidViewModel(context) {
 
-    lateinit var mistakeRepo: MistakesRepository
+
     val showLoading = ObservableBoolean(false)
+    val noNotesLabel = ObservableField<String>()
+    val noNotesIconRes = ObservableField<Drawable>()
+    val empty = ObservableBoolean(false)
 
     val liveItems = MutableLiveData<List<Mistake>>()
 
@@ -23,6 +34,11 @@ class MistakesViewModel: ViewModel() {
         mistakeRepo.getAll(object: MistakesDataSource.LoadMistakesCallback {
             override fun onTasksLoaded(tasks: List<Mistake>) {
                 showLoading.set(false)
+                empty.set(tasks.isEmpty())
+                if (tasks.isEmpty()) {
+                    noNotesLabel.set("Die learning quickly or else you will have not time!")
+                    noNotesIconRes.set( ContextCompat.getDrawable(getApplication(), R.drawable.ic_list))
+                }
                 liveItems.value = tasks
             }
 
@@ -32,4 +48,5 @@ class MistakesViewModel: ViewModel() {
 
         })
     }
+
 }

@@ -1,8 +1,10 @@
 package com.samples.simplekotlin.ui.notes
 
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
@@ -16,10 +18,10 @@ import com.samples.simplekotlin.R
 import com.samples.simplekotlin.data.model.Mistake
 import com.samples.simplekotlin.data.source.MistakesRepository
 import com.samples.simplekotlin.data.source.local.MistakesLocalDataSource
+import com.samples.simplekotlin.databinding.MistakeLayoutItemBinding
 import com.samples.simplekotlin.databinding.MistakesListingFragmentBinding
-import com.samples.simplekotlin.utils.find
-import com.samples.simplekotlin.utils.inflate
 import com.samples.simplekotlin.utils.onRefresh
+import java.util.*
 
 abstract class MistakesListingFragment: Fragment() {
 
@@ -28,6 +30,7 @@ abstract class MistakesListingFragment: Fragment() {
 
     private lateinit var mistakesAdapter: MistakeAdapter
     private lateinit var refreshLayout : SwipeRefreshLayout
+    private lateinit var mFactory: ViewModelProvider.AndroidViewModelFactory
 
     private val mistakeRepo by lazy {
         MistakesRepository(
@@ -45,9 +48,10 @@ abstract class MistakesListingFragment: Fragment() {
         val binding = MistakesListingFragmentBinding.inflate(inflater, container, false)
         binding.view = this
 
-        mistakesViewModel = ViewModelProviders.of(this)
+        val factory = MistakesViewModelFactory(activity?.application!!, mistakeRepo)
+        mistakesViewModel = ViewModelProviders.of (this, factory)
                 .get(MistakesViewModel::class.java)
-        mistakesViewModel.mistakeRepo = mistakeRepo
+
         binding.viewModel = mistakesViewModel
 
         mistakesAdapter = MistakeAdapter(context)
@@ -85,23 +89,24 @@ abstract class MistakesListingFragment: Fragment() {
             }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return MistakeViewHolder(parent.inflate(R.layout.mistake_layout_item))
+            return MistakeViewHolder(MistakeLayoutItemBinding.inflate(LayoutInflater.from(parent.context)))
         }
 
         override fun getItemCount(): Int = data.size
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            if (holder is MistakeViewHolder) holder.bind(data[position])
-            else println("Binding eror")
+            if (holder is MistakeViewHolder) {
+                holder.bind(data[position])
+            } else {
+                println("Binding eror")
+            }
         }
 
 
-        class MistakeViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-            private val mistakeTitle = v.find<TextView>(R.id.mistake_title_text)
-            private val mistakeDesc = v.find<TextView>(R.id.mistake_desc_text)
+        class MistakeViewHolder(private val mBinding: ViewDataBinding) : RecyclerView.ViewHolder(mBinding.root) {
             fun bind(item: Mistake) {
-                mistakeTitle.text = item.title
-                mistakeDesc.text = item.desc
+                ( mBinding as MistakeLayoutItemBinding ).mistake = item
+                mBinding.executePendingBindings()
             }
         }
 

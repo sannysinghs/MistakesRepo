@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SimpleKotlin</string>
+    <string name="empty_notes">Well, you have currently no learning yet!</string>
 </resources>
